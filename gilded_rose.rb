@@ -14,50 +14,95 @@ class GildedRose
   end
 
   def update_quality
-    for i in 0..(@items.size-1)
-      if (@items[i].name != "Aged Brie" && @items[i].name != "Backstage passes to a TAFKAL80ETC concert")
-        if (@items[i].quality > 0)
-          if (@items[i].name != "Sulfuras, Hand of Ragnaros")
-            @items[i].quality = @items[i].quality - 1
-          end
-        end
-      else
-        if (@items[i].quality < 50)
-          @items[i].quality = @items[i].quality + 1
-          if (@items[i].name == "Backstage passes to a TAFKAL80ETC concert")
-            if (@items[i].sell_in < 11)
-              if (@items[i].quality < 50)
-                @items[i].quality = @items[i].quality + 1
-              end
-            end
-            if (@items[i].sell_in < 6)
-              if (@items[i].quality < 50)
-                @items[i].quality = @items[i].quality + 1
-              end
-            end
-          end
-        end
-      end
-      if (@items[i].name != "Sulfuras, Hand of Ragnaros")
-        @items[i].sell_in = @items[i].sell_in - 1;
-      end
-      if (@items[i].sell_in < 0)
-        if (@items[i].name != "Aged Brie")
-          if (@items[i].name != "Backstage passes to a TAFKAL80ETC concert")
-            if (@items[i].quality > 0)
-              if (@items[i].name != "Sulfuras, Hand of Ragnaros")
-                @items[i].quality = @items[i].quality - 1
-              end
-            end
-          else
-            @items[i].quality = @items[i].quality - @items[i].quality
-          end
-        else
-          if (@items[i].quality < 50)
-            @items[i].quality = @items[i].quality + 1
-          end
-        end
-      end
+    @items.each do |product|
+      characterize_product(product)
     end
   end
+
+  def characterize_product(product)
+    brie_test(product)
+    not_eq_sulfuras_1(product)
+    typical_test(product)
+  end
+
+  def brie_test(product)
+    if (product.name != "Aged Brie" && product.name != "Backstage passes to a TAFKAL80ETC concert")
+      quality_gt_0(product)
+    else
+      quality_lt_50(product)
+      backstage_passes(product)
+    end
+  end
+
+  def not_eq_sulfuras_1(product)
+    if (product.name != "Sulfuras, Hand of Ragnaros")
+      product.sell_in -= 1
+    end
+  end
+
+  def not_eq_sulfuras_2(product)
+    if (product.name != "Sulfuras, Hand of Ragnaros")
+      product.quality -= 1
+    end
+  end
+
+  def quality_gt_0(product)
+    if (product.quality > 0)
+      not_eq_sulfuras_2(product)
+    end
+  end
+
+  def quality_lt_50(product)
+    if (product.quality < 50)
+      product.quality += 1
+    end
+  end
+
+  def sell_lt_0(product)
+    if (product.sell_in < 0)
+      not_eq_brie(product)
+    end
+  end
+
+  def sell_lt_6(product)
+    if (product.sell_in < 6)
+      quality_lt_50(product)
+    end
+  end
+
+  def sell_lt_11(product)
+    if (product.sell_in < 11)
+      quality_lt_50(product)
+    end
+  end
+
+
+
+  def typical_test(product)
+    sell_lt_0(product)
+  end
+
+  def not_eq_brie(product)
+    if (product.name != "Aged Brie")
+      not_backstage_passes(product)
+    else
+      quality_lt_50(product)
+    end
+  end
+
+  def backstage_passes(product)
+    if (product.name == "Backstage passes to a TAFKAL80ETC concert")
+      sell_lt_11(product)
+      sell_lt_6(product)
+    end
+  end
+
+  def not_backstage_passes(product)
+    if (product.name != "Backstage passes to a TAFKAL80ETC concert")
+      quality_gt_0(product)
+    else
+      product.quality = 0
+    end
+  end
+
 end
