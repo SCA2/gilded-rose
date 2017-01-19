@@ -34,7 +34,7 @@ class Product < Item
   def self.adjust_backstage
     Proc.new do |p|
       if p.sell_in <= 0
-        p.adjust_quality_by(-p.quality)
+        p.quality = 0
       elsif p.sell_in < 6
         p.adjust_quality_by(3)
       elsif p.sell_in < 11
